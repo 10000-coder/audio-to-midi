@@ -1,4 +1,5 @@
 import { useApp } from './useApp';
+import type { StemState } from './types';
 import UploadZone from './components/UploadZone';
 import StemPanel from './components/StemPanel';
 import ResultPanel from './components/ResultPanel';
@@ -18,13 +19,13 @@ export default function App() {
     getStemDownloadUrl,
   } = useApp();
 
-  const handleDownloadMidi = async (stem: { midiUrl: string; midiFilename: string }) => {
+  const handleDownloadMidi = async (stem: StemState) => {
     if (!stem.midiUrl) return;
-    const url = await getMidiDownloadUrl(stem.midiUrl, stem.midiFilename);
+    const url = await getMidiDownloadUrl(stem.midiUrl, stem.midiFilename ?? `${stem.key}.mid`);
     if (url) window.open(url, '_blank');
   };
 
-  const handleDownloadAudio = async (stem: { audioUrl: string; key: string }) => {
+  const handleDownloadAudio = async (stem: StemState) => {
     if (!stem.audioUrl) return;
     const url = await getStemDownloadUrl(stem.audioUrl, `${stem.key}_stem.mp3`);
     if (url) window.open(url, '_blank');

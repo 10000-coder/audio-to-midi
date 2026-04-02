@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import type { AppState, StemState, StepStatus } from './types';
+import type { AppState, StemState, StemStatus } from './types';
 import { STEMS } from './types';
 import {
   uploadAudio,
@@ -42,7 +42,7 @@ export function useApp() {
     });
   }, []);
 
-  const updateAllStemsStatus = useCallback((status: StepStatus, extra?: Partial<StemState>) => {
+  const updateAllStemsStatus = useCallback((status: StemStatus, extra?: Partial<StemState>) => {
     setAppState((prev) => ({
       ...prev,
       stems: prev.stems.map((s) => ({ ...s, ...extra, status })),
@@ -104,7 +104,7 @@ export function useApp() {
           const url = output[stem.key];
           return {
             ...stem,
-            status: url ? 'separated' : 'idle',
+            status: (url ? 'separated' : 'idle') as StemStatus,
             audioUrl: url || stem.audioUrl,
             error: url ? null : `No output for ${stem.key}`,
           };
