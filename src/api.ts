@@ -17,7 +17,7 @@ async function post<T>(path: string, body?: unknown, token?: string): Promise<T>
   return res.json();
 }
 
-// Upload audio to Replicate (returns { uri: string })
+// Upload audio to Replicate (returns file URI)
 export async function uploadAudio(file: File, token?: string): Promise<{ uri: string }> {
   // Convert to ArrayBuffer and send as raw binary
   const buffer = await file.arrayBuffer();
@@ -34,7 +34,14 @@ export async function uploadAudio(file: File, token?: string): Promise<{ uri: st
     const err = await res.json().catch(() => ({ error: res.statusText }));
     throw new Error(err.error || `Upload failed: ${res.status}`);
   }
-  return res.json();
+  const data = await res.json();
+  // Replicate Files API response field name varies; try common candidates
+  const uri = (data as any).uri || (data as any).url || (data as any).href
+    || (data as any).hrefs?.get || (data as any).id;
+  if (!uri) {
+    throw new Error(`Unexpected upload response: ${JSON.stringify(data)}`);
+  }
+  return { uri };
 }
 
 // Create prediction
